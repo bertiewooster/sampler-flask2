@@ -20,14 +20,14 @@ def hello_world():
 def run():
     print('Running run')
     if request.method == 'POST':
-        print('POST')
+        #print('POST')
         # check if the post request has the file part
         if 'file' not in request.files:
             print('no file')
             return redirect(request.url)
-        print('A file was provided')
+        #print('A file was provided')
         file = request.files['file']
-        print('file.filename = {}'.format(file.filename))
+        #print('file.filename = {}'.format(file.filename))
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
@@ -45,10 +45,7 @@ def run():
             # send file name as parameter to download
             return redirect('/downloadfile/' + filename)
 
-    #return render_template('run.html')
-    #return render_template('upload_file.html')
-    #return render_template('image_upload.html')
-    return render_template('upload_file_plus.html')
+    return render_template('run.html')
 
 # Upload API
 @app.route('/uploadfile', methods=['GET', 'POST'])
@@ -76,8 +73,7 @@ def upload_file():
             # send file name as parameter to download
             return redirect('/downloadfile/' + filename)
 
-    #return render_template('upload_file.html')
-    #return render_template('run.html')
+    return render_template('upload_file.html')
 
 # Download API
 @app.route("/downloadfile/<filename>", methods = ['GET'])
