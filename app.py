@@ -11,7 +11,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Hello world
 @app.route('/')
 def hello_world():
-    return 'Hello this is flaskftp3'
+    return 'Hello this is sampler-flask'
     # Add a template with links to:
     # Upload a new file
     # Download an existing file--list the files in 
@@ -44,9 +44,15 @@ def run():
             # save file
             file.save(filepath)
             print("saved file successfully")
+            # Add code here to 
+            #  1) compose output_file filepath (path/name)
+            #  2) run Sampler, so output_file is written to appropriate place
+
+            # Change filename to be the output_file
             # send file name as parameter to download
             return redirect('/downloadfile/' + filename)
 
+    # If request.method is GET
     return render_template('run.html')
 
 """
