@@ -2,6 +2,7 @@
 import os
 from werkzeug.utils import secure_filename
 from flask import Flask, flash, request, redirect, send_file, render_template
+import shutil
 
 UPLOAD_FOLDER = 'uploads/'
 
@@ -21,36 +22,45 @@ def hello_world():
 def run():
     #print('Running run')
     if request.method == 'POST':
-        #print('request.files: {}'.format(request.files))
-        #print('POST')
         # check if the post request has the file part
         if 'input_file' not in request.files:
             print('no file')
             return redirect(request.url)
         #print('A file was provided')
-        file = request.files['input_file']
+        input_file = request.files['input_file']
         #print('file = {}'.format(file))
         # if user does not select file, browser also
         # submit a empty part without filename
-        if file.filename == '':
+        if input_file.filename == '':
             print('no filename')
             return redirect(request.url)
         else:
+            # Handle input parameters output_file, n_results
+            output_file = request.form.get('output_file')
+            n_results = request.form.get('n_results')
+            print('output_file, n_results= {}, {}'.format(output_file, n_results))
+
+            # --- Upload inut_file ---
+            # Ensure the upload folder exists
             os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
             # ensure the filename is safe to use
-            filename = secure_filename(file.filename)
+            input_filename = secure_filename(input_file.filename)
             # compose file path: upload folder + filename
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            input_filepath = os.path.join(app.config['UPLOAD_FOLDER'], input_filename)
             # save file
-            file.save(filepath)
+            input_file.save(input_filepath)
             print("saved file successfully")
             # Add code here to 
             #  1) compose output_file filepath (path/name)
+            output_filepath = os.path.join(app.config['UPLOAD_FOLDER'], output_file)
+
+            # Prototype Sampler by simply copying input file as output file
+            shutil.copy(input_filepath, output_filepath)
+
             #  2) run Sampler, so output_file is written to appropriate place
 
-            # Change filename to be the output_file
-            # send file name as parameter to download
-            return redirect('/downloadfile/' + filename)
+            # send output_file name as parameter to download
+            return redirect('/downloadfile/' + output_file)
 
     # If request.method is GET
     return render_template('run.html')
