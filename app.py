@@ -1,3 +1,4 @@
+# Adapted from https://buildcoding.com/upload-and-download-file-using-flask-in-python/
 import os
 from werkzeug.utils import secure_filename
 from flask import Flask, flash, request, redirect, send_file, render_template
@@ -18,16 +19,17 @@ def hello_world():
 # Run sampler API
 @app.route('/run', methods=['GET', 'POST'])
 def run():
-    print('Running run')
+    #print('Running run')
     if request.method == 'POST':
+        #print('request.files: {}'.format(request.files))
         #print('POST')
         # check if the post request has the file part
-        if 'file' not in request.files:
+        if 'input_file' not in request.files:
             print('no file')
             return redirect(request.url)
         #print('A file was provided')
-        file = request.files['file']
-        #print('file.filename = {}'.format(file.filename))
+        file = request.files['input_file']
+        #print('file = {}'.format(file))
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
@@ -47,11 +49,13 @@ def run():
 
     return render_template('run.html')
 
+"""
 # Upload API
 @app.route('/uploadfile', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
+        print('request.files: {}'.format(request.files))
         if 'file' not in request.files:
             print('no file')
             return redirect(request.url)
@@ -74,6 +78,7 @@ def upload_file():
             return redirect('/downloadfile/' + filename)
 
     return render_template('upload_file.html')
+"""
 
 # Download API
 @app.route("/downloadfile/<filename>", methods = ['GET'])
