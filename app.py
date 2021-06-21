@@ -7,6 +7,11 @@ import pathlib
 #import shutil # for duplicating a file, to prototype Sampler output
 import sampler.sample.sampler # Works A. VSC recognizes
 
+# For /yield--stream to web page
+import flask
+import subprocess
+import time          #You don't need this. Just included it so you can see the output stream.
+
 UPLOAD_FOLDER = 'uploads/'
 
 app = Flask(__name__, template_folder='templates')
@@ -77,7 +82,13 @@ def run():
             #shutil.copy(input_filepath, output_filepath)
 
             #  2) run Sampler, so output_file is written to appropriate place
-            sampler.sample.sampler.Sampler(input_filepath, output_filepath, n_results) # Works A.
+            try:
+                sampler.sample.sampler.Sampler(input_filepath, output_filepath, n_results) # Works A.
+            except sampler.sample.sampler.SamplerError as e:
+                #error_str="SampleError occurred"
+                error_str = str(e)
+                return redirect('/error/' + error_str)
+                #return flask.Response("SamplerError", mimetype='text/html')  # text/html is required for most browsers to show this
 
             # send output_file name as parameter to download
             return redirect('/downloadfile/' + output_filename)
@@ -85,36 +96,11 @@ def run():
     # If request.method is GET
     return render_template('run.html')
 
-"""
-# Upload API
-@app.route('/uploadfile', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        print('request.files: {}'.format(request.files))
-        if 'file' not in request.files:
-            print('no file')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
-            print('no filename')
-            return redirect(request.url)
-        else:
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-            # ensure the filename is safe to use
-            filename = secure_filename(file.filename)
-            # compose file path: upload folder + filename
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            # save file
-            file.save(filepath)
-            print("saved file successfully")
-            # send file name as parameter to download
-            return redirect('/downloadfile/' + filename)
-
-    return render_template('upload_file.html')
-"""
+# Error page
+@app.route("/error/<error_str>", methods = ['GET'])
+def show_error(error_str):
+    return render_template('error.html',value=error_str)
+    #return render_template('download.html',value=error_str)
 
 # Download API
 @app.route("/downloadfile/<filename>", methods = ['GET'])
@@ -128,3 +114,16 @@ def return_files_tut(filename):
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
+
+@app.route('/yield')
+def index():
+    def inner():
+        mylist = list(range(10))
+
+        for number in mylist:
+            time.sleep(1)                           # Don't need this just shows the text streaming
+            yield str(number) + '<br/>\n'
+
+    return flask.Response(inner(), mimetype='text/html')  # text/html is required for most browsers to show th$
+
+app.run(debug=True, port=5000, host='0.0.0.0')
