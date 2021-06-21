@@ -2,14 +2,8 @@
 import os
 from werkzeug.utils import secure_filename
 from flask import Flask, flash, request, redirect, send_file, render_template
-import shutil # for duplicating a file, to prototype Sampler output
-
-#if __name__ == "__main__" and __package__ is None:
-#    __package__ = "sampler.sample"
-#from sampler.sample import Sampler
-#import sampler.sample.sampler
-#import sampler.sample # VSC recognizes
-#import sampler
+#import shutil # for duplicating a file, to prototype Sampler output
+import sampler.sample.sampler # Works A. VSC recognizes
 
 UPLOAD_FOLDER = 'uploads/'
 
@@ -21,8 +15,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def hello_world():
     return 'Hello this is sampler-flask'
     # Add a template with links to:
-    # Upload a new file
-    # Download an existing file--list the files in 
+    #   Run a new sampler
+    #   Download an existing file--list the files in UPLOAD_FOLDER
 
 # Run sampler API
 @app.route('/run', methods=['GET', 'POST'])
@@ -65,8 +59,6 @@ def run():
             #shutil.copy(input_filepath, output_filepath)
 
             #  2) run Sampler, so output_file is written to appropriate place
-            #sampler.sample.debug.py
-            import sampler.sample.sampler # Works A. VSC recognizes
             sampler.sample.sampler.Sampler(input_filepath, output_filepath, n_results) # Works A.
 
             # send output_file name as parameter to download
