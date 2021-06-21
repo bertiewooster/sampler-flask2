@@ -2,6 +2,8 @@
 import os
 from werkzeug.utils import secure_filename
 from flask import Flask, flash, request, redirect, send_file, render_template
+import pathlib
+
 #import shutil # for duplicating a file, to prototype Sampler output
 import sampler.sample.sampler # Works A. VSC recognizes
 
@@ -36,12 +38,7 @@ def run():
             print('no filename')
             return redirect(request.url)
         else:
-            # Handle input parameters output_file, n_results
-            output_file = request.form.get('output_file')
-            n_results = request.form.get('n_results')
-            print('output_file, n_results= {}, {}'.format(output_file, n_results))
-
-            # --- Upload inut_file ---
+            # --- Upload input_file ---
             # Ensure the upload folder exists
             os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
             # ensure the filename is safe to use
@@ -51,9 +48,30 @@ def run():
             # save file
             input_file.save(input_filepath)
             print("saved file successfully")
+
+            # Handle input parameters output_file, n_results
+            output_file = request.form.get('output_file')
+            if output_file and not output_file.isspace():
+                output_filename = output_file
+            else:
+                # the string is non-empty
+                output_identifier = pathlib.Path(input_filename).stem
+                print('output_identifier={}'.format(output_identifier))
+                output_suffix = "_out"
+                output_extension = os.path.splitext(input_filename)[1]
+                print('output_extension={}'.format(output_extension))
+                output_filename = output_identifier + output_suffix + output_extension
+            print("output_filename = {}".format(output_filename))
+
+            n_results = request.form.get('n_results')
+            #print('output_file, n_results= {}, {}'.format(output_file, n_results))
+
             # Add code here to 
             #  1) compose output_file filepath (path/name)
-            output_filepath = os.path.join(app.config['UPLOAD_FOLDER'], output_file)
+            output_filepath = os.path.join(app.config['UPLOAD_FOLDER'], output_filename)
+
+            print('input_filepath = {}'.format(input_filepath))
+            print('output_filepath = {}'.format(output_filepath))
 
             # Prototype Sampler by simply copying input file as output file
             #shutil.copy(input_filepath, output_filepath)
@@ -62,7 +80,7 @@ def run():
             sampler.sample.sampler.Sampler(input_filepath, output_filepath, n_results) # Works A.
 
             # send output_file name as parameter to download
-            return redirect('/downloadfile/' + output_file)
+            return redirect('/downloadfile/' + output_filename)
 
     # If request.method is GET
     return render_template('run.html')
