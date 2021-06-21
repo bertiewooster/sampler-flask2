@@ -8,13 +8,18 @@
         </p>
         <p>
             <label for="output_file">Output file (valid points to be found)</label>
+            <br>
+                If you do not enter a name, _out will be added to the input file name.
+                For example, from input metal.txt, output will be metal_out.txt.
+            <br>
             <input type="text" name=output_file>
         </p>
         <p>
             <label for="n_results">Number of points</label>
-            <input type="number" name=n_results>
+            <br><input type="number" name=n_results>
         </p>
         <p>            
             <input type=submit value=Upload>
         </p>
     </form>
+    <div id="status"></div>
