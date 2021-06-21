@@ -9,7 +9,6 @@ import shutil # for duplicating a file, to prototype Sampler output
 #from sampler.sample import Sampler
 #import sampler.sample.sampler
 #import sampler.sample # VSC recognizes
-import sampler.sample.sampler # VSC recognizes
 #import sampler
 
 UPLOAD_FOLDER = 'uploads/'
@@ -67,7 +66,8 @@ def run():
 
             #  2) run Sampler, so output_file is written to appropriate place
             #sampler.sample.debug.py
-            sampler.sample.sampler.Sampler(input_filepath, output_filepath, n_results)
+            import sampler.sample.sampler # Works A. VSC recognizes
+            sampler.sample.sampler.Sampler(input_filepath, output_filepath, n_results) # Works A.
 
             # send output_file name as parameter to download
             return redirect('/downloadfile/' + output_file)
