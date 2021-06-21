@@ -2,7 +2,15 @@
 import os
 from werkzeug.utils import secure_filename
 from flask import Flask, flash, request, redirect, send_file, render_template
-import shutil
+import shutil # for duplicating a file, to prototype Sampler output
+
+#if __name__ == "__main__" and __package__ is None:
+#    __package__ = "sampler.sample"
+#from sampler.sample import Sampler
+#import sampler.sample.sampler
+#import sampler.sample # VSC recognizes
+import sampler.sample.sampler # VSC recognizes
+#import sampler
 
 UPLOAD_FOLDER = 'uploads/'
 
@@ -55,9 +63,11 @@ def run():
             output_filepath = os.path.join(app.config['UPLOAD_FOLDER'], output_file)
 
             # Prototype Sampler by simply copying input file as output file
-            shutil.copy(input_filepath, output_filepath)
+            #shutil.copy(input_filepath, output_filepath)
 
             #  2) run Sampler, so output_file is written to appropriate place
+            #sampler.sample.debug.py
+            sampler.sample.sampler.Sampler(input_filepath, output_filepath, n_results)
 
             # send output_file name as parameter to download
             return redirect('/downloadfile/' + output_file)
