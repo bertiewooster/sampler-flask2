@@ -123,6 +123,21 @@ def return_files_tut(filename):
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
 
+@app.route('/yield_dynamic')
+def yield_dynamic():
+    def counter():
+        update_every = 300000    
+
+        i = 0
+        while i < (update_every * 5 + 1):
+            if (i % update_every) == 0:
+                if i == update_every:
+                    print("Finding valid points is taking a while, so we'll update you every {} random points tried".format(update_every))
+                yield str(i) + '<br/>\n'
+            i += 1
+
+    return flask.Response(counter(), mimetype='text/html')  # text/html is required for most browsers to show th$
+
 @app.route('/yield')
 def index():
     def inner():
