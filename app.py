@@ -15,6 +15,7 @@ import time          #You don't need this. Just included it so you can see the o
 UPLOAD_FOLDER = 'uploads/'
 
 app = Flask(__name__, template_folder='templates')
+app.secret_key = b'_5#y2L"EHJHSJDFHRWEHFN\n\xec]/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Hello world
@@ -87,7 +88,9 @@ def run():
             except sampler.sample.sampler.SamplerError as e:
                 #error_str="SampleError occurred"
                 error_str = str(e)
-                return redirect('/error/' + error_str)
+                flash(error_str)
+                #return redirect('/error/' + error_str)
+                return redirect('/error')
                 #return flask.Response("SamplerError", mimetype='text/html')  # text/html is required for most browsers to show this
 
             # send output_file name as parameter to download
@@ -97,9 +100,9 @@ def run():
     return render_template('run.html')
 
 # Error page
-@app.route("/error/<error_str>", methods = ['GET'])
-def show_error(error_str):
-    return render_template('error.html',value=error_str)
+@app.route("/error", methods = ['GET'])
+def show_error():
+    return render_template('error.html')
     #return render_template('download.html',value=error_str)
 
 # Download API
