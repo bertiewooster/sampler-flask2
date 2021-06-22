@@ -86,10 +86,8 @@ def run():
             try:
                 sampler.sample.sampler.Sampler(input_filepath, output_filepath, n_results) # Works A.
             except sampler.sample.sampler.SamplerError as e:
-                #error_str="SampleError occurred"
                 error_str = str(e)
                 flash(error_str)
-                #return redirect('/error/' + error_str)
                 return redirect('/error')
                 #return flask.Response("SamplerError", mimetype='text/html')  # text/html is required for most browsers to show this
 
@@ -103,7 +101,6 @@ def run():
 @app.route("/error", methods = ['GET'])
 def show_error():
     return render_template('error.html')
-    #return render_template('download.html',value=error_str)
 
 # Download API
 @app.route("/downloadfile/<filename>", methods = ['GET'])
