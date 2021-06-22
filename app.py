@@ -12,10 +12,15 @@ import flask
 import subprocess
 import time          #You don't need this. Just included it so you can see the output stream.
 
+import secrets
+
 UPLOAD_FOLDER = 'uploads/'
 
 app = Flask(__name__, template_folder='templates')
-app.secret_key = b'_5#y2L"EHJHSJDFHRWEHFN\n\xec]/'
+
+secret = secrets.token_urlsafe(32)
+app.secret_key = secret
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Hello world
@@ -53,7 +58,7 @@ def run():
             input_filepath = os.path.join(app.config['UPLOAD_FOLDER'], input_filename)
             # save file
             input_file.save(input_filepath)
-            print("saved file successfully")
+            print("Uploaded file successfully")
 
             # Handle input parameters output_file, n_results
             output_file = request.form.get('output_file')
@@ -62,12 +67,12 @@ def run():
             else:
                 # the string is non-empty
                 output_identifier = pathlib.Path(input_filename).stem
-                print('output_identifier={}'.format(output_identifier))
+                #print('output_identifier={}'.format(output_identifier))
                 output_suffix = "_out"
                 output_extension = os.path.splitext(input_filename)[1]
-                print('output_extension={}'.format(output_extension))
+                #print('output_extension={}'.format(output_extension))
                 output_filename = output_identifier + output_suffix + output_extension
-            print("output_filename = {}".format(output_filename))
+            #print("output_filename = {}".format(output_filename))
 
             n_results = request.form.get('n_results')
             #print('output_file, n_results= {}, {}'.format(output_file, n_results))
@@ -76,8 +81,8 @@ def run():
             #  1) compose output_file filepath (path/name)
             output_filepath = os.path.join(app.config['UPLOAD_FOLDER'], output_filename)
 
-            print('input_filepath = {}'.format(input_filepath))
-            print('output_filepath = {}'.format(output_filepath))
+            #print('input_filepath = {}'.format(input_filepath))
+            #print('output_filepath = {}'.format(output_filepath))
 
             # Prototype Sampler by simply copying input file as output file
             #shutil.copy(input_filepath, output_filepath)
@@ -88,6 +93,9 @@ def run():
             except sampler.sample.sampler.SamplerError as e:
                 error_str = str(e)
                 flash(error_str)
+                flash("Input file: {}".format(input_filename))
+                flash("Output file: {}".format(output_filename))
+                flash("Number of results to find: {}".format(n_results))
                 return redirect('/error')
                 #return flask.Response("SamplerError", mimetype='text/html')  # text/html is required for most browsers to show this
 
