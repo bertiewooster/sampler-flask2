@@ -3,8 +3,8 @@ import os
 from werkzeug.utils import secure_filename
 from flask import Flask, flash, request, redirect, send_file, render_template
 import pathlib
+from contextlib import redirect_stdout
 
-#import shutil # for duplicating a file, to prototype Sampler output
 import sampler.sample.sampler # Works A. VSC recognizes
 
 # For /yield--stream to web page
@@ -52,12 +52,16 @@ def run():
             # --- Upload input_file ---
             # Ensure the upload folder exists
             os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
             # ensure the filename is safe to use
             input_filename = secure_filename(input_file.filename)
+
             # compose file path: upload folder + filename
             input_filepath = os.path.join(app.config['UPLOAD_FOLDER'], input_filename)
+
             # save file
             input_file.save(input_filepath)
+
             print("Uploaded file successfully")
 
             # Handle input parameters output_file, n_results
@@ -67,29 +71,21 @@ def run():
             else:
                 # the string is non-empty
                 output_identifier = pathlib.Path(input_filename).stem
-                #print('output_identifier={}'.format(output_identifier))
                 output_suffix = "_out"
                 output_extension = os.path.splitext(input_filename)[1]
-                #print('output_extension={}'.format(output_extension))
                 output_filename = output_identifier + output_suffix + output_extension
-            #print("output_filename = {}".format(output_filename))
 
             n_results = request.form.get('n_results')
-            #print('output_file, n_results= {}, {}'.format(output_file, n_results))
 
-            # Add code here to 
-            #  1) compose output_file filepath (path/name)
+            #  Compose output_file filepath (path/name)
             output_filepath = os.path.join(app.config['UPLOAD_FOLDER'], output_filename)
 
-            #print('input_filepath = {}'.format(input_filepath))
-            #print('output_filepath = {}'.format(output_filepath))
-
-            # Prototype Sampler by simply copying input file as output file
-            #shutil.copy(input_filepath, output_filepath)
-
-            #  2) run Sampler, so output_file is written to appropriate place
+            #  Run Sampler, so output_file is written to appropriate place
             try:
-                sampler.sample.sampler.Sampler(input_filepath, output_filepath, n_results) # Works A.
+                with open('help.txt', 'w') as f:
+                    with redirect_stdout(f):
+                        print('it now prints to `help.text`')
+                        sampler.sample.sampler.Sampler(input_filepath, output_filepath, n_results) # Works A.
             except sampler.sample.sampler.SamplerError as e:
                 error_str = str(e)
                 flash(error_str)
@@ -126,7 +122,7 @@ if __name__ == "__main__":
 @app.route('/yield_dynamic')
 def yield_dynamic():
     def counter():
-        update_every = 300000    
+        update_every = 500000    
 
         i = 0
         while i < (update_every * 5 + 1):
@@ -137,6 +133,7 @@ def yield_dynamic():
             i += 1
 
     return flask.Response(counter(), mimetype='text/html')  # text/html is required for most browsers to show th$
+    return render_template('download.html',value=filename)
 
 @app.route('/yield')
 def index():

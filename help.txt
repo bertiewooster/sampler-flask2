@@ -1,0 +1,10 @@
+it now prints to `help.text`
+From input file uploads/alloy.txt, will generate and write to uploads/alloy_out.txt 77 points which satisfy constraints
+From linearly-spaced mesh grid:
+  # valid points / # checked: 0 / 1 (0.0000%, 0 valid points per second in 0.0006 seconds)
+From random points:
+  # valid points / # checked: 77 / 83 (92.7711%, 21618 valid points per second in 0.0036 seconds)
+Totals: 
+  # valid points / # checked: 77 / 84 (91.6667%, 18507 valid points per second in 0.0042 seconds)
+Done! We have the 77 points.
+Generated and wrote 77 points to uploads/alloy_out.txt in 0.3866 seconds
